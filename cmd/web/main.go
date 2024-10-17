@@ -6,7 +6,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/alexedwards/scs/redisstore"
@@ -38,6 +40,8 @@ func main() {
 		InfoLog:  infoLog,
 		ErrorLog: errorLog,
 	}
+	// add safe exit.
+	go safeExit(&app)
 	app.serve()
 }
 
@@ -105,4 +109,13 @@ func initRedis() *redis.Pool {
 		},
 	}
 	return redisPool
+}
+
+func safeExit(app *Config) {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+	<-c
+	app.Wait.Wait()
+	fmt.Println("before exit")
+	os.Exit(0)
 }
