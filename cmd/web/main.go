@@ -17,14 +17,14 @@ import (
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4"
 	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/objectMaker/concurrency/data"
 )
 
 const WEB_PORT = "8080"
 
 func main() {
 	db := initDB()
-	fmt.Println(db)
-
+	Models := data.New(db)
 	// create session
 	session := initSession()
 
@@ -39,6 +39,7 @@ func main() {
 		Wait:     &wg,
 		InfoLog:  infoLog,
 		ErrorLog: errorLog,
+		Models:   &Models,
 	}
 	// add safe exit.
 	go safeExit(&app)

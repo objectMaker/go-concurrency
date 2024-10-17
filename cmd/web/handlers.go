@@ -10,6 +10,18 @@ func (app *Config) LoginPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Config) PostLoginPage(w http.ResponseWriter, r *http.Request) {
+	app.Session.RenewToken(r.Context())
+
+	err := r.ParseForm()
+
+	if err != nil {
+		app.ErrorLog.Println(err)
+	}
+	email := r.Form.Get("email")
+	password := r.Form.Get("password")
+
+	user,err := app.Models.
+
 }
 
 func (app *Config) Logout(w http.ResponseWriter, r *http.Request) {
